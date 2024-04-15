@@ -1,0 +1,113 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Juego adivina el número</title>
+    <style>
+      html {
+        font-family: sans-serif; /*Establece la fuente para todo el documento HTML*/
+      }
+
+      body {
+        width: 50%;
+        max-width: 800px;
+        min-width: 480px;
+        margin: 0 auto;
+      } /*Centra el tamaño del contenido*/
+
+      .lastResult {
+        color: white;
+        padding: 3px; /* Agrega espacio interior al elemento "lastResult" */
+      }
+    </style>
+  </head>
+
+  <body> 
+    <h1>Juego adivina el número</h1> 
+    <p>
+      Seleccionaremos un número aleatorio entre 1 y 100. Fíjate si lo puedes
+      adivinar en 10 turnos o menos. Vamos a decirte si tu número es más alto o
+      más bajo.
+    </p>
+    <div class="form">
+      <label for="guessField">Adivina el numero: </label
+      ><input type="text" id="guessField" class="guessField" />
+      <input type="submit" value="Enviar respuesta" class="guessSubmit" />
+    </div>
+    <div class="resultParas">
+      <p class="guesses"></p>
+      <p class="lastResult"></p>
+      <p class="lowOrHi"></p>
+    </div>
+    <script> //Código de JavaScript
+      let randomNumber = Math.floor(Math.random() * 100) + 1; // Genera un número aleatorio entre 1 y 100
+      const guesses = document.querySelector(".guesses"); // Selecciona el párrafo "guesses"
+      const lastResult = document.querySelector(".lastResult"); // Selecciona el párrafo "lastResult"
+      const lowOrHi = document.querySelector(".lowOrHi"); // Selecciona el párrafo "lowOrHi"
+      const guessSubmit = document.querySelector(".guessSubmit"); // Selecciona el botón "Enviar respuesta"
+      const guessField = document.querySelector(".guessField"); // Selecciona el campo de entrada "guessField"
+      let guessCount = 1; // Contabiliza el número de intentos
+      let resetButton; // Variable para almacenar el botón "Iniciar nuevo juego"
+
+      function checkGuess() {
+        let userGuess = Number(guessField.value); // Convierte el valor del campo "guessField" a un número
+        if (guessCount === 1) // Comprueba si es el primer intento 
+        { 
+          guesses.textContent = "Intentos anteriores: "; // Inicializa el párrafo "guesses"
+        }
+
+        guesses.textContent += userGuess + " "; // Agrega el intento actual al párrafo "guesses"
+
+        if (userGuess === randomNumber) // Comprueba si el intento es correcto
+        {
+          lastResult.textContent = "¡Felicidades! ¡Lo adivinaste!"; // Muestra el mensaje cuando se consigue el objetivo
+          lastResult.style.backgroundColor = "green"; // Establece el color de fondo del mensaje de victoria
+          lowOrHi.textContent = "";// Limpia el párrafo "lowOrHi"
+          setGameOver();  // Llama a la función setGameOver
+        } else if (guessCount === 10) {  // Comprueba si es el último intento
+         lastResult.textContent = "!!!Fin del juego!!!";  // Mensaje de derrota
+         lowOrHi.textContent = "";  // Limpia el párrafo "lowOrHi"
+          setGameOver();  // Llama a la función setGameOver
+        } else {  // Si el intento es incorrecto y quedan intentos
+          lastResult.textContent = "¡Incorrecto!";  // Mensaje de intento incorrecto
+          lastResult.style.backgroundColor = "red";  // Establece el color de fondo del mensaje de intento incorrecto
+          if (userGuess < randomNumber) { //Identifica si el numero es más bajo para mandar el mensaje
+            lowOrHi.textContent = "¡El número es muy bajo!";
+          } else if (userGuess > randomNumber) { //Identifica si el número es más alto para mandar el mensaje
+            lowOrHi.textContent = "¡El número es muy grande!";
+          }
+        }
+
+        guessCount++; //Incrementa la cantidad de intentos registrados
+        guessField.value = ""; // Limpia el campo de entrada "guessField" para el siguiente intento
+      }
+
+      guessSubmit.addEventListener("click", checkGuess); // Agrega un detector de eventos "click" al botón "Enviar respuesta"
+
+      function setGameOver() // Función para deshabilitar los elementos del juego y crear el botón "Iniciar nuevo juego"
+      { 
+        guessField.disabled = true; // Deshabilita el campo de entrada "guessField"
+        guessSubmit.disabled = true; // Deshabilita el botón "Enviar respuesta"
+        resetButton = document.createElement("button"); // Crea un elemento botón
+        resetButton.textContent = "Iniciar nuevo juego"; // Establece el texto del botón a "Iniciar nuevo juego"
+        document.body.append(resetButton); // Agrega el botón al final del cuerpo del documento (contenedor principal)
+        resetButton.addEventListener("click", resetGame); // Agrega un detector de eventos "click" al botón "Iniciar nuevo juego"
+      }
+
+      function resetGame() { // Función para reiniciar el juego
+        guessCount = 1; // Reinicia la variable de intentos a 1
+        const resetParas = document.querySelectorAll(".resultParas p"); // Selecciona todos los párrafos dentro del elemento con clase "resultParas"
+        for (let i = 0; i < resetParas.length; i++) { // Recorre todos los párrafos seleccionados y limpia su contenido
+          resetParas[i].textContent = "";
+        }
+
+        resetButton.parentNode.removeChild(resetButton); // Elimina el botón "Iniciar nuevo juego"
+        guessField.disabled = false; // Habilita nuevamente el campo de entrada "guessField"
+        guessSubmit.disabled = false; // Habilita nuevamente el botón "Enviar respuesta"
+        guessField.value = ""; // Limpia el campo de entrada "guessField"
+        guessField.focus(); // Coloca el cursor en el campo de entrada "guessField" para el siguiente intento
+        lastResult.style.backgroundColor = "white"; // Cambia el color de fondo del mensaje de resultado a blanco (limpia estilos)
+        randomNumber = Math.floor(Math.random() * 100) + 1; // Genera un nuevo número aleatorio entre 1 y 100
+      }
+    </script>
+  </body>
+</html>
